@@ -1,0 +1,21 @@
+# Check the current working directory
+print(getwd())
+
+# Optionally, list files in the current working directory to confirm location
+print(list.files())
+
+# Set the working directory to the absolute path where the metadata.txt file is located
+# Replace "/full/path/to/your/Downloads" with your actual path
+
+setwd("C:/Users/dhruv/Downloads")  # For Windows
+
+# Read the .csv file
+metadata <- read.csv("metadata.csv", header = TRUE, sep = ",")
+
+# Write the data to a .tsv file
+write.table(metadata, file = "metadata.tsv", sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
+
+
+# Print success message
+cat("File successfully converted to metadata.tsv")
+

@@ -1,0 +1,188 @@
+before this make the 
+1.manifest file by manifest.sh
+2.get the metadata.tsv file from ncbi or sra data base
+
+
+1.activate environment:
+conda activate qiime2-amplicon-2024.5
+
+2.Importing the Sequences
+qiime tools import \
+  --type 'SampleData[PairedEndSequencesWithQuality]' \
+  --input-path manifest.tsv \
+  --output-path paired-end-demux.qza \
+  --input-format PairedEndFastqManifestPhred33V2
+
+3.Summarizing the Demultiplexed Data
+qiime demux summarize \
+  --i-data paired-end-demux.qza \
+  --o-visualization demux.qzv
+
+View the summary:
+qiime tools view demux.qzv
+
+4.Denoising with DADA2
+qiime dada2 denoise-paired \
+  --i-demultiplexed-seqs paired-end-demux.qza \
+  --p-trim-left-f 0 \
+  --p-trim-left-r 0 \
+  --p-trunc-len-f 240 \
+  --p-trunc-len-r 240 \
+  --o-table table.qza \
+  --o-representative-sequences rep-seqs.qza \
+  --o-denoising-stats denoising-stats.qza
+  
+                   (or)
+                   
+for conrtrol samples                   
+nohup qiime dada2 denoise-paired \
+  --i-demultiplexed-seqs paired-end-demux.qza \
+  --p-trim-left-f 0 \
+  --p-trim-left-r 0 \
+  --p-trunc-len-f 240 \
+  --p-trunc-len-r 240 \
+  --p-n-threads 8 \
+  --o-table table.qza \
+  --o-representative-sequences rep-seqs.qza \
+  --o-denoising-stats denoising-stats.qza \
+  --verbose > dada2_log.txt &
+  
+for disease samples
+qiime dada2 denoise-paired \
+  --i-demultiplexed-seqs paired-end-demux.qza \
+  --p-trim-left-f 0 \
+  --p-trim-left-r 0 \
+  --p-trunc-len-f 160 \
+  --p-trunc-len-r 100 \
+  --p-max-ee-f 2 \
+  --p-max-ee-r 2 \
+  --p-chimera-method consensus \
+  --p-n-threads 8 \
+  --o-table table.qza \
+  --o-representative-sequences rep-seqs.qza \
+  --o-denoising-stats denoising-stats.qza \
+  --verbose > dada2_log.txt &
+  
+  always check the quality befor trimming 
+
+Then, check the log file:
+
+tail -f dada2_log.txt
+
+
+5.Summarizing Denoising Statistics
+qiime metadata tabulate \
+  --m-input-file denoising-stats.qza \
+  --o-visualization denoising-stats.qzv
+
+View the stats:
+qiime tools view denoising-stats.qzv
+
+6.Summarizing the Feature Table
+qiime feature-table summarize \
+  --i-table table.qza \
+  --o-visualization table.qzv \
+  --m-sample-metadata-file metadata.tsv
+
+in metadata.tsv check the colomn one as name sample-id
+
+View the table summary:
+qiime tools view table.qzv
+
+7.Visualizing the Representative Sequences
+qiime feature-table tabulate-seqs \
+  --i-data rep-seqs.qza \
+  --o-visualization rep-seqs.qzv
+
+View the sequences:
+qiime tools view rep-seqs.qzv
+
+8.Taxonomic Classification
+Using your classifier gg-13-8-99-515-806-nb-classifier.qza
+
+qiime feature-classifier classify-sklearn \
+  --i-classifier gg-13-8-99-515-806-nb-classifier.qza \
+  --i-reads rep-seqs.qza \
+  --o-classification taxonomy.qza
+
+9.Visualizing Taxonomy
+
+qiime taxa barplot \
+  --i-table table.qza \
+  --i-taxonomy taxonomy.qza \
+  --m-metadata-file metadata.tsv \
+  --o-visualization taxa-bar-plots.qzv
+
+View the bar plot:
+qiime tools view taxa-bar-plots.qzv
+
+10.Exporting the Taxonomy Data
+qiime tools export \
+  --input-path taxonomy.qza \
+  --output-path exported-taxonomy
+
+cat exported-taxonomy/taxonomy.tsv
+
+11.Exporting the Feature Table
+
+qiime tools export \
+  --input-path table.qza \
+  --output-path exported-feature-table
+
+biom convert \
+  --input-fp exported-feature-table/feature-table.biom \
+  --output-fp feature-table.tsv \
+  --to-tsv
+
+12.the phylogenetic prep
+
+qiime phylogeny align-to-tree-mafft-fasttree \
+  --i-sequences rep-seqs.qza \
+  --o-alignment aligned-rep-seqs.qza \
+  --o-masked-alignment masked-aligned-rep-seqs.qza \
+  --o-tree unrooted-tree.qza \
+  --o-rooted-tree rooted-tree.qza
+
+Exporting the Tree for Visualization in External Tools
+qiime tools export \
+  --input-path rooted-tree.qza \
+  --output-path exported-tree
+
+
+needed files:gg-13-8-99-515-806-nb-classifier.qza
+
+
+so after the qiime is done if we are not able to find some organism names run BLAST remote or local
+
+1.Download the file:
+wget https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-2.16.0+-x64-linux.tar.gz
+
+2.Extract the files:
+tar -xzvf ncbi-blast-2.16.0+-x64-linux.tar.gz
+
+Move to a directory in your PATH (optional):
+sudo mv ncbi-blast-2.16.0+/bin/* /usr/local/bin/
+
+blastn -version
+
+remote BLAST:
+blastn -query dna_sequence.fasta -db nt -out results.txt -evalue 0.01 -outfmt 6 -max_target_seqs 5 -remote
+
+LOCAL BLAST:
+Download the Database:
+download the 16S_ribosomal_RNA database:
+wget https://ftp.ncbi.nlm.nih.gov/blast/db/16S_ribosomal_RNA.tar.gz
+tar -xzvf 16S_ribosomal_RNA.tar.gz
+
+THIS COMMAND FOR WHOLE SET:
+blastn -query dna_sequence.fasta -db /home/dhruva/Downloads/16S_ribosomal_RNA -out results.txt -evalue 0.01 -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore staxids sscinames" -max_target_seqs 5 -num_threads 8
+
+THIS COMMAND FOR ONLY TOP HIT:
+blastn -query dna_sequence.fasta -db /home/dhruva/Downloads/16S_ribosomal_RNA -out results.txt -evalue 0.01 -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore staxids sscinames" -max_target_seqs 1 -max_hsps 1 -num_threads 8
+
+TO CONVERT .txt to .tsv 
+mv results.txt results.tsv
+
+         (or)
+         
+blastn -query dna_sequence.fasta -db /home/dhruva/Downloads/16S_ribosomal_RNA -out results.tsv -evalue 0.01 -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore staxids sscinames" -max_target_seqs 1 -max_hsps 1 -num_threads 8         

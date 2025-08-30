@@ -1,0 +1,215 @@
+Disease type
+
+
+1.python code to identify the top organisms in the list
+
+import pandas as pd
+
+def get_top_expressed_organisms(file_path, top_n=5):
+    # Load the file
+    df = pd.read_csv(file_path, sep="\t")
+    
+    # Count occurrences of each organism
+    top_organisms = df['sscinames'].value_counts().head(top_n)
+    
+    # Print the results
+    print("Top {} Highly Expressed Organisms:".format(top_n))
+    print(top_organisms)
+
+# Example usage
+file_path = "your_file_path_here.tsv"  # Replace with the actual file path
+get_top_expressed_organisms(file_path)
+
+ans)
+bacteria_list = [
+    "Streptococcus", "Escherichia", "Staphylococcus", "Pseudomonas",
+    "Klebsiella", "Salmonella", "Shigella", "Clostridium", "Enterococcus",
+    "Listeria", "Mycobacterium", "Campylobacter", "Helicobacter", "Vibrio",
+    "Legionella", "Acinetobacter", "Neisseria", "Yersinia", "Bacteroides"
+]
+
+
+###############################################################################################################
+
+
+2.then we searched the net for the pathogenic bacteria they returned all of these , then we took the top two pathogenic bacteria for furthure study.
+
+
+###############################################################################################################
+
+3.then we tried to get the total fraction of organisms from the datset by python code
+
+# List of known pathogenic bacteria (common examples, can be expanded)
+pathogenic_bacteria_list = [
+    "Streptococcus", "Escherichia", "Staphylococcus", "Pseudomonas",
+    "Klebsiella", "Salmonella", "Shigella", "Clostridium", "Enterococcus",
+    "Listeria", "Mycobacterium", "Campylobacter", "Helicobacter", "Vibrio",
+    "Legionella", "Acinetobacter", "Neisseria", "Yersinia", "Bacteroides"
+]
+
+# Count occurrences of pathogenic bacteria in the dataset
+pathogenic_count = df[df["sscinames"].str.contains("|".join(pathogenic_bacteria_list), case=False, na=False)].shape[0]
+
+# Calculate percentage
+pathogenic_percentage = (pathogenic_count / total_entries) * 100
+
+pathogenic_percentage
+ 
+ans)
+
+4.195804195804196
+Pathogenic bacteria constitute 4.20% of the identified organism
+
+
+
+##############################################################################################################
+
+
+4. then we used an python code to get the percentages of the top two organisms percentages:
+
+# Calculate the percentage of Streptococcus and Escherichia species in the dataset
+
+# Count total occurrences of each species
+total_entries = len(df)
+
+# Count occurrences of Streptococcus and Escherichia species
+streptococcus_count = df[df["sscinames"].str.contains("Streptococcus", case=False, na=False)].shape[0]
+escherichia_count = df[df["sscinames"].str.contains("Escherichia", case=False, na=False)].shape[0]
+
+# Calculate percentages
+streptococcus_percentage = (streptococcus_count / total_entries) * 100
+escherichia_percentage = (escherichia_count / total_entries) * 100
+
+streptococcus_percentage, escherichia_percentage
+
+ans)
+(3.4965034965034967, 0.6993006993006993)
+
+Streptococcus species constitute 3.50% of the identified organisms in your dataset.
+
+Escherichia species constitute 0.70% of the identified organisms.
+
+
+
+#####################################################################################################
+
+
+5.then we tried t search any research article that has link to hypothyroidism to these bacteria:
+
+ans)
+streptococcus:
+https://pmc.ncbi.nlm.nih.gov/articles/PMC10920276/?utm_source=chatgpt.com
+
+escherichia:
+https://pmc.ncbi.nlm.nih.gov/articles/PMC2292955/
+https://www.mdpi.com/2075-4418/13/2/279
+
+
+
+
+
+
+
+
+
+
+
+
+normal type
+
+1.python code to identify the top organisms in the list
+
+# Define the file path
+file_path = "/mnt/data/control_results_identified _ncbi.tsv"
+
+# Load the required library
+import pandas as pd
+
+def get_top_expressed_organisms(file_path, top_n=5):
+    # Load the file
+    df = pd.read_csv(file_path, sep="\t")
+    
+    # Count occurrences of each organism
+    top_organisms = df['sscinames'].value_counts().head(top_n)
+    
+    return top_organisms
+
+# Get the top 5 highly expressed organisms
+top_organisms = get_top_expressed_organisms(file_path)
+top_organisms
+
+ans)
+bacteria_list = [
+    "Streptococcus", "Escherichia", "Staphylococcus", "Pseudomonas",
+    "Klebsiella", "Salmonella", "Shigella", "Clostridium", "Enterococcus",
+    "Listeria", "Mycobacterium", "Campylobacter", "Helicobacter", "Vibrio",
+    "Legionella", "Acinetobacter", "Neisseria", "Yersinia", "Bacteroides"
+]
+
+#################################################################################################
+
+2.then we searched the net for the normal bacteria in pregnancy they returned all of these , then we took the top two bacteria for furthure study.
+
+##################################################################################################
+
+3.then we tried to get the total fraction of organisms from the datset by python code
+
+# Define the list of top 5 bacteria obtained earlier
+top_5_bacteria_list = [
+    "Faecalibacterium duncaniae", "Blautia wexlerae DSM 19850", "Gemmiger formicilis", 
+    "Lachnoclostridium edouardi", "Faecalibacterium prausnitzii"
+]
+
+# Load the file
+df = pd.read_csv(file_path, sep="\t")
+
+# Count total entries
+total_entries = len(df)
+
+# Count occurrences of the top 5 bacteria in the dataset
+normal_bacteria_count = df[df["sscinames"].str.contains("|".join(top_5_bacteria_list), case=False, na=False)].shape[0]
+
+# Calculate percentage
+normal_bacteria_percentage = (normal_bacteria_count / total_entries) * 100
+
+normal_bacteria_percentage
+ 
+ans)
+
+11.02346278317152
+bacteria constitute 11.02% of the identified organism
+
+###################################################################################################
+
+4. then we used an python code to get the percentages of the top two organisms percentages:
+
+# Calculate the percentage of Faecalibacterium duncaniae and Blautia wexlerae DSM 19850 species in the dataset
+
+# Count occurrences of Faecalibacterium duncaniae and Blautia wexlerae DSM 19850
+faecalibacterium_count = df[df["sscinames"].str.contains("Faecalibacterium duncaniae", case=False, na=False)].shape[0]
+blautia_count = df[df["sscinames"].str.contains("Blautia wexlerae DSM 19850", case=False, na=False)].shape[0]
+
+# Calculate percentages
+faecalibacterium_percentage = (faecalibacterium_count / total_entries) * 100
+blautia_percentage = (blautia_count / total_entries) * 100
+
+faecalibacterium_percentage, blautia_percentage
+
+ans)
+(3.1351132686084147, 2.26537216828479)
+
+Faecalibacterium duncaniae: 3.14%
+
+Blautia wexlerae DSM 19850: 2.27%
+
+####################################################################################################
+
+
+5.then we tried t search any research article that has link to hypothyroidism to these bacteria:
+
+ans)
+Faecalibacterium :
+https://www.frontiersin.org/journals/cellular-and-infection-microbiology/articles/10.3389/fcimb.2024.1465928/full?utm_source=chatgpt.com
+
+Blautia(Lachnospiraceae ):
+https://www.frontiersin.org/journals/endocrinology/articles/10.3389/fendo.2022.943408/full?utm_source=chatgpt.com
